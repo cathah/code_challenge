@@ -4,8 +4,6 @@ import pandas as pd
 class DatabaseManager:
     DATABASE_NAME = "inventory_management.db"
 
-    location_id = 1 #TODO pass in as arg
-
     def __init__(self):
         pass
 
@@ -33,7 +31,7 @@ class DatabaseManager:
         return res
 
 
-    def create_tables(self):
+    def create_tables(self, location_id):
 
         conn = self.__get_connection()
         cursor = conn.cursor()
@@ -46,14 +44,14 @@ class DatabaseManager:
         locations_df.to_sql("locations", conn, if_exists="replace", index=False)
 
         all_staff_df = pd.read_csv("server/csvs/staff.csv")
-        staff_df = all_staff_df[all_staff_df.location_id == DatabaseManager.location_id].drop(['location_id'], axis=1)
+        staff_df = all_staff_df[all_staff_df.location_id == location_id].drop(['location_id'], axis=1)
         staff_df.to_sql("staff", conn, if_exists="replace", index=False)
 
         modifiers_df = pd.read_csv("server/csvs/modifiers.csv")
         modifiers_df.to_sql("modifiers", conn, if_exists="replace", index=False)
 
         all_menus_df = pd.read_csv("server/csvs/menus.csv")
-        menus_df = all_menus_df[all_menus_df.location_id == DatabaseManager.location_id].drop(['location_id'], axis=1)
+        menus_df = all_menus_df[all_menus_df.location_id == location_id].drop(['location_id'], axis=1)
         menus_df.to_sql("menus", conn, if_exists="replace", index=False)
 
         all_recipes_df = pd.read_csv("server/csvs/recipes.csv")

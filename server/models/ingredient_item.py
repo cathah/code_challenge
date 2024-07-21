@@ -9,6 +9,7 @@ class IngredientItem:
         self.cost = cost
         self.quantity = quantity
 
+
     def save(self):
         db_manager = DatabaseManager()
         query_string = """  UPDATE ingredients 
@@ -54,3 +55,8 @@ class IngredientItem:
             ingredient = IngredientItem(row[0], row[1], row[2], row[3], row[4])
         return ingredient
         
+
+
+
+    def __str__(self):
+        return f'The ingredient is:\n\tid: {self.ing_id}\n\tname: {self.name}\n\tunit: {self.unit}\n\tcost: {self.cost}\n\tquantity: {self.quantity}\n'
