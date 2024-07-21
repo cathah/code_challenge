@@ -1,4 +1,10 @@
 import requests
+import json
+import pandas as pd
+
+pd.set_option("max_columns", None) 
+pd.set_option("max_colwidth", None) 
+pd.set_option("max_rows", None) 
 
 def main():
 
@@ -10,12 +16,13 @@ def main():
 Please select your action from the list below by entering the corresponding number:
 1. Hello World
 2. List all inventory
-3. List inventory by ID
-4. List event log
-5. Accept delivery
-6. Sell item
-7. Take stock
-8. Generate report
+3. List inventory by ingredient ID
+4. List inventory by ingredient name
+5. List event log
+6. Accept delivery
+7. Sell item
+8. Take stock
+9. Generate report
 '''
 
 
@@ -32,12 +39,12 @@ def select_home_function(i):
             1: lambda: hello_world,
             2: lambda: list_all_inventory,
             3: lambda: list_inventory_by_id,
-            4: lambda: list_all_events,
-            5: lambda: accept_delivery,
-            6: lambda: sell_item,
-            7: lambda: take_stock,
-            8: lambda: generate_report,
-
+            4: lambda: list_inventory_by_name,
+            5: lambda: list_all_events,
+            6: lambda: accept_delivery,
+            7: lambda: sell_item,
+            8: lambda: take_stock,
+            9: lambda: generate_report
     }
     func = switcher.get(i, lambda: 'Invalid Choice')
     return func()
@@ -53,11 +60,31 @@ def hello_world():
 
 def list_all_inventory():
     response_object = requests.get("http://127.0.0.1:5000/list_inventory/all")
-    print(response_object.json())
+    inventory_df = pd.read_json(response_object.text)[['name', 'ingredient_id', 'quantity', 'unit']]
+    print(inventory_df.sort_values('name').to_string(index=False))
 
 def list_inventory_by_id():
-    response_object = requests.get("http://127.0.0.1:5000/list_inventory/<ing_id>")
-    print(response_object.json())
+
+    print('Please enter the ingredient ID: ')
+    ing_id = input()
+    response_object = requests.get(f"http://127.0.0.1:5000/list_inventory/{ing_id}")
+    inventory_df = pd.DataFrame(json.loads(response_object.text), index=[0])[['name', 'ingredient_id', 'quantity', 'unit']]
+    print(inventory_df.to_string(index=False))
+
+def list_inventory_by_name():
+
+    print('Please enter the ingredient name: ')
+    ing_name = input()
+    response_object = requests.get(f"http://127.0.0.1:5000/list_inventory/name/{ing_name}")
+    inventory_df = pd.DataFrame(json.loads(response_object.text), index=[0])[['name', 'ingredient_id', 'quantity', 'unit']]
+    print(inventory_df.to_string(index=False))
+
+
+
+
+
+
+
 
 def list_all_events():
     response_object = requests.get("http://127.0.0.1:5000/list_events/all")

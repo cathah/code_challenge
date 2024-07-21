@@ -11,6 +11,26 @@ class DatabaseManager:
 
     def __get_connection(self):
         return sqlite3.connect(DatabaseManager.DATABASE_NAME)
+    
+    def execute_query(self, query_string, query_parameters=[]):
+        conn = self.__get_connection()
+        cursor = conn.cursor()
+
+        res = {"success":None, "msg":None, "data":None}        
+        try:
+            cursor.execute(query_string, query_parameters)
+            conn.commit()
+        
+            res["success"] = True
+            res["msg"] = "Success"
+            res["data"]  = cursor.fetchall()
+        except sqlite3.OperationalError as err:
+            res["success"] = False
+            res["msg"] = str(err)
+        finally:
+            conn.close()
+        
+        return res
 
 
     def create_tables(self):
@@ -41,7 +61,7 @@ class DatabaseManager:
         recipes_df.to_sql("recipes", conn, if_exists="replace", index=False)
 
         all_ingredients_df = pd.read_csv("server/csvs/ingredients.csv")
-        ingredients_df = all_ingredients_df[all_ingredients_df.ingredient_id.isin(recipes_df.ingredient_id)].assign(current_quantity=0.0)
+        ingredients_df = all_ingredients_df[all_ingredients_df.ingredient_id.isin(recipes_df.ingredient_id)].assign(quantity=0.0)
         ingredients_df.to_sql("ingredients", conn, if_exists="replace", index=False)
 
         conn.commit()
@@ -50,6 +70,3 @@ class DatabaseManager:
 
 
 
-
-
-    

@@ -1,5 +1,7 @@
 from flask import Flask, jsonify
 
+from server.models.ingredient_item import IngredientItem
+
 
 app = Flask(__name__)
 
@@ -16,15 +18,49 @@ def index():
 
 @app.route("/list_inventory/all")
 def get_all_inventory():
-    return jsonify(
-        get = "all inventory"
-    )
+
+    inventory_list = IngredientItem.get_all_ingredients()
+    resp = []
+    for item in inventory_list:
+        resp.append({
+            "ingredient_id": item.ing_id,
+            "name": item.name,
+            "quantity": item.quantity,
+            "unit": item.unit
+        })
+    return jsonify(resp)
+
+
 
 @app.route("/list_inventory/<ing_id>")
-def get_inventory_by_ingredient(ing_id):
-    return jsonify(
-        get = "inventory by id"
-    )
+def get_inventory_by_ingredient_id(ing_id):
+
+    ingredient = IngredientItem.get_ingredient_by_id(ing_id)
+    if ingredient:
+        return jsonify({ 
+            "ingredient_id": ingredient.ing_id,
+            "name": ingredient.name,
+            "quantity": ingredient.quantity,
+            "unit": ingredient.unit
+        })
+    else:
+        return jsonify({})
+
+
+@app.route("/list_inventory/name/<ing_name>")
+def get_inventory_by_ingredient_name(ing_name):
+
+    ingredient = IngredientItem.get_ingredient_by_name(ing_name)
+    if ingredient:
+        return jsonify({ 
+            "ingredient_id": ingredient.ing_id,
+            "name": ingredient.name,
+            "quantity": ingredient.quantity,
+            "unit": ingredient.unit
+        })
+    else:
+        return jsonify({})
+    
 
 @app.route("/list_events/all")
 def get_all_events():
@@ -46,6 +82,7 @@ def sell_item():
 
 @app.route("/take_stock/")
 def take_stock():
+
     return jsonify(
         event = "take_stock"
     )
