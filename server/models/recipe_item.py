@@ -1,10 +1,6 @@
 from server.database.database_manager import DatabaseManager
 import pandas as pd
 
-pd.set_option("max_columns", None) 
-pd.set_option("max_colwidth", None) 
-pd.set_option("max_rows", None) 
-
 class RecipeItem:
     
     def __init__(self, recipe_id, name, ing_dict):
