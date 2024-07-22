@@ -37,7 +37,7 @@ class DatabaseManager:
         cursor = conn.cursor()
 
         cursor.execute('''CREATE TABLE IF NOT EXISTS events
-            (timestamp TIMESTAMP PRIMARY KEY DEFAULT CURRENT_TIMESTAMP, staff_id INT, activity TEXT, ingredient_id INT, 
+            (timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, staff_id INT, event TEXT, ingredient_id INT, 
                        change REAL, recipe_id INT)''')
 
         locations_df = pd.read_csv("server/csvs/locations.csv")
